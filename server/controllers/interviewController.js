@@ -3,67 +3,74 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 export const chatInterview = async (req, res) => {
   try {
-   const { messages, type, level, mode } = req.body;
+    const { messages, mode, level } = req.body;
 
-let difficultyPrompt = "";
-if (level === "easy")
-  difficultyPrompt = "Keep questions basic and conceptual.";
-if (level === "medium")
-  difficultyPrompt =
-    "Ask implementation-based and reasoning questions.";
-if (level === "hard")
-  difficultyPrompt =
-    "Ask advanced, optimization and edge-case questions.";
+    const groq = new Groq({
+      apiKey: process.env.GROQ_API_KEY,
+    });
 
-let modePrompt = "";
+    // 🎯 Mode Control
+    let modePrompt = "";
 
-if (mode === "technical")
-  modePrompt = "Focus only on coding, DSA and algorithms.";
+    if (mode === "technical")
+      modePrompt = "Focus strictly on DSA, algorithms, coding implementation.";
+    if (mode === "core")
+      modePrompt = "Focus strictly on OS, DBMS, CN, OOPS concepts.";
+    if (mode === "hr")
+      modePrompt =
+        "Act like HR interviewer. Ask behavioral and personality-based questions.";
+    if (mode === "rapid")
+      modePrompt =
+        "Conduct rapid-fire round. Ask short, fast, mixed technical questions.";
 
-if (mode === "core")
-  modePrompt =
-    "Focus on core subjects like OS, DBMS, CN, OOPS.";
+    // 🎯 Difficulty Control
+    let difficultyPrompt = "";
 
-if (mode === "hr")
-  modePrompt =
-    "Ask behavioral, personality and situational HR questions.";
+    if (level === "easy")
+      difficultyPrompt = "Ask beginner level questions.";
+    if (level === "medium")
+      difficultyPrompt = "Ask intermediate level questions.";
+    if (level === "hard")
+      difficultyPrompt =
+        "Ask advanced optimization and edge-case based questions.";
 
-if (mode === "rapid")
-  modePrompt = `
-Rapid Fire Mode:
-- Ask short, fast-paced questions
-- One line questions
-- Mixed technical + core + hr
-- No long explanation
-`;
-
-const systemPrompt = `
+    const systemPrompt = `
 You are a strict professional interviewer.
 
-Interview Mode: ${mode}
 ${modePrompt}
 ${difficultyPrompt}
 
-Ask ONE question at a time.
+Rules:
+- Ask ONE question at a time.
+- Evaluate answers critically.
+- If correct → ask deeper follow-up.
+- If partially correct → ask clarification.
+- If wrong → give hint and re-ask.
+- Never reveal full answer.
+- Keep responses sharp and professional.
 
-After answer:
-- If correct → ask deeper follow-up
-- If wrong → give hint only
-- Keep responses short.
+If user sends "END_INTERVIEW":
 
-If user says END_INTERVIEW:
-Give evaluation in format:
-Score: X/10
-Feedback: short improvement suggestion.
+Respond EXACTLY in this format:
+
+FINAL SCORE: X/10
+
+STRENGTHS:
+- Point 1
+- Point 2
+
+WEAKNESSES:
+- Point 1
+- Point 2
+
+IMPROVEMENT ADVICE:
+- Point 1
+- Point 2
+
+End conversation after this.
 `;
-
 
     const response = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
@@ -77,7 +84,6 @@ Feedback: short improvement suggestion.
     res.json({
       reply: response.choices[0].message.content,
     });
-
   } catch (error) {
     console.error("GROQ ERROR:", error);
     res.status(500).json({ error: error.message });

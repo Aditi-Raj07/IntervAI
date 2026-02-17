@@ -2,16 +2,19 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { FaGoogle, FaRobot } from "react-icons/fa";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       setLoading(true);
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      window.location.href = "/";
+
+      navigate("/home"); // ✅ smooth redirect
     } catch (err) {
       console.error("Login Error:", err);
       alert(err.message);
@@ -23,13 +26,11 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black flex items-center justify-center relative overflow-hidden">
 
-      {/* Background Glow Effects */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600 rounded-full blur-[140px] opacity-30 animate-pulse"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-cyan-500 rounded-full blur-[140px] opacity-30 animate-pulse"></div>
 
       <div className="relative bg-slate-900/70 backdrop-blur-xl border border-white/10 p-12 rounded-3xl shadow-2xl w-full max-w-md text-center">
 
-        {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="bg-gradient-to-tr from-purple-600 to-cyan-500 p-4 rounded-2xl shadow-lg">
             <FaRobot className="text-white text-3xl" />

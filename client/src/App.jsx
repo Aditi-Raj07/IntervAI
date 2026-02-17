@@ -1,18 +1,38 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { auth } from "./firebase/firebase";
 
-import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Interview from "./pages/Interview";
+import Login from "./pages/Login";
+import { signOut } from "firebase/auth";
 
-export default function App() {
+useEffect(() => {
+  signOut(auth);
+}, []);
+
+function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+
+        // 🔥 Role-based logic (simple version)
+        if (currentUser.email === "youradmin@gmail.com") {
+          setRole("admin");
+        } else {
+          setRole("user");
+        }
+
+      } else {
+        setUser(null);
+        setRole(null);
+      }
       setLoading(false);
     });
 
@@ -22,7 +42,7 @@ export default function App() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        Loading...
+        Loading authentication...
       </div>
     );
   }
@@ -30,12 +50,31 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {user ? (
-          <Route path="/*" element={<Home user={user} />} />
-        ) : (
-          <Route path="/*" element={<Login />} />
-        )}
+
+        {/* ALWAYS OPEN LOGIN FIRST */}
+        <Route
+          path="/"
+          element={!user ? <Login /> : <Navigate to="/home" />}
+        />
+
+        {/* PROTECTED HOME */}
+        <Route
+          path="/home"
+          element={user ? <Home role={role} /> : <Navigate to="/" />}
+        />
+
+        {/* PROTECTED INTERVIEW */}
+        <Route
+          path="/interview/:mode/:level"
+          element={user ? <Interview /> : <Navigate to="/" />}
+        />
+
+        {/* BLOCK UNKNOWN ROUTES */}
+        <Route path="*" element={<Navigate to="/" />} />
+
       </Routes>
     </BrowserRouter>
   );
 }
+
+export default App;

@@ -1,4 +1,4 @@
-// client/src/firebase/firebase.js
+ //client/src/firebase/firebase.js
 
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -19,3 +19,6 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 export default app;
+
+// console.log("API KEY:", import.meta.env.VITE_FIREBASE_API_KEY);
+// console.log("AUTH DOMAIN:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
