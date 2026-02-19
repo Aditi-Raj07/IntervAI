@@ -6,11 +6,6 @@ import { auth } from "./firebase/firebase";
 import Home from "./pages/Home";
 import Interview from "./pages/Interview";
 import Login from "./pages/Login";
-import { signOut } from "firebase/auth";
-
-useEffect(() => {
-  signOut(auth);
-}, []);
 
 function App() {
   const [user, setUser] = useState(null);
@@ -18,21 +13,21 @@ function App() {
   const [role, setRole] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
 
-        // 🔥 Role-based logic (simple version)
+        // Simple role logic
         if (currentUser.email === "youradmin@gmail.com") {
           setRole("admin");
         } else {
           setRole("user");
         }
-
       } else {
         setUser(null);
         setRole(null);
       }
+
       setLoading(false);
     });
 
@@ -51,25 +46,25 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* ALWAYS OPEN LOGIN FIRST */}
+        {/* LOGIN PAGE */}
         <Route
           path="/"
-          element={!user ? <Login /> : <Navigate to="/home" />}
+          element={user ? <Navigate to="/home" /> : <Login />}
         />
 
-        {/* PROTECTED HOME */}
+        {/* HOME PAGE */}
         <Route
           path="/home"
           element={user ? <Home role={role} /> : <Navigate to="/" />}
         />
 
-        {/* PROTECTED INTERVIEW */}
+        {/* INTERVIEW PAGE */}
         <Route
           path="/interview/:mode/:level"
           element={user ? <Interview /> : <Navigate to="/" />}
         />
 
-        {/* BLOCK UNKNOWN ROUTES */}
+        {/* UNKNOWN ROUTES */}
         <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>

@@ -1,8 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { db, auth } from "../firebase/firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 export default function Interview() {
   const { mode, level } = useParams();
@@ -13,53 +11,61 @@ export default function Interview() {
   const [loading, setLoading] = useState(false);
   const [ended, setEnded] = useState(false);
   const [score, setScore] = useState(null);
-  const [progress, setProgress] = useState(0);
+
   const [isMuted, setIsMuted] = useState(false);
   const [speechRate, setSpeechRate] = useState(1);
 
-  const recognitionRef = useRef(null);
   const bottomRef = useRef(null);
+  const typingAudioRef = useRef(null);
 
-  // 🔊 Stop voice
+  // ==========================
+  // 🎧 STOP SPEAKING
+  // ==========================
   const stopSpeaking = () => {
     window.speechSynthesis.cancel();
   };
 
-  // 🔊 Speak
+  // ==========================
+  // 🔊 SPEAK TEXT
+  // ==========================
   const speakText = (text) => {
     if (isMuted || ended) return;
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = speechRate;
+    utterance.lang = "en-US";
+
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   };
 
-  // 🎤 Mic Input
-  const startListening = () => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("Speech recognition not supported");
-      return;
+  // ==========================
+  // ⌨ Typing Sound
+  // ==========================
+  const playTypingSound = () => {
+    if (!typingAudioRef.current) {
+      typingAudioRef.current = new Audio(
+        "https://assets.mixkit.co/sfx/preview/mixkit-keyboard-typing-1386.mp3"
+      );
     }
-
-    recognitionRef.current = new SpeechRecognition();
-    recognitionRef.current.lang = "en-US";
-
-    recognitionRef.current.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setInput(transcript);
-    };
-
-    recognitionRef.current.start();
+    typingAudioRef.current.currentTime = 0;
+    typingAudioRef.current.play();
   };
 
-  // Start Interview
+  // ==========================
+  // AUTO START INTERVIEW
+  // ==========================
   useEffect(() => {
     startInterview();
-    return () => stopSpeaking();
+
+    return () => {
+      stopSpeaking(); // Stop voice if user leaves page
+    };
   }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const startInterview = async () => {
     setLoading(true);
@@ -74,8 +80,13 @@ export default function Interview() {
     setLoading(false);
   };
 
+  // ==========================
+  // SEND MESSAGE
+  // ==========================
   const sendMessage = async () => {
     if (!input.trim() || ended) return;
+
+    playTypingSound();
 
     const updatedMessages = [
       ...messages,
@@ -98,13 +109,19 @@ export default function Interview() {
       { role: "assistant", content: reply },
     ]);
 
-    setProgress((prev) => Math.min(prev + 20, 100));
     speakText(reply);
     setLoading(false);
   };
 
+  // ==========================
+  // END INTERVIEW
+  // ==========================
   const endInterview = async () => {
-    stopSpeaking();
+    if (ended) return;
+
+    stopSpeaking(); // 🔴 stop voice instantly
+
+    setLoading(true);
 
     const res = await axios.post(
       "http://localhost:5000/api/interview/chat",
@@ -121,127 +138,128 @@ export default function Interview() {
     const reply = res.data.reply;
 
     const match = reply.match(/(\d+)\s*\/\s*10/);
-    let finalScore = null;
-    if (match) {
-      finalScore = parseInt(match[1]);
-      setScore(finalScore);
-    }
+    if (match) setScore(parseInt(match[1]));
 
-    setMessages([...messages, { role: "assistant", content: reply }]);
+    setMessages([
+      ...messages,
+      { role: "assistant", content: reply },
+    ]);
+
     speakText(reply);
-    setEnded(true);
 
-    // 💾 Save to Firebase
-    await addDoc(collection(db, "interviews"), {
-      user: auth.currentUser.email,
-      mode,
-      level,
-      score: finalScore,
-      createdAt: serverTimestamp(),
-    });
+    setEnded(true);
+    setLoading(false);
+  };
+
+  // ==========================
+  // BACK BUTTON
+  // ==========================
+  const handleBack = () => {
+    stopSpeaking();
+    navigate("/");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-700 to-black flex flex-col text-white">
+    <div className="min-h-screen bg-gradient-to-br from-purple-700 to-pink-600 flex flex-col text-white">
 
-      {/* Header */}
-      <div className="p-4 flex justify-between items-center bg-black/30">
+      {/* HEADER */}
+      <div className="bg-black/30 p-4 flex justify-between items-center">
 
         <div>
-          🤖 AI Interview - {mode} ({level})
+          AI Interview - {mode} ({level})
         </div>
 
-        <div className="flex gap-3 items-center">
-          <button onClick={() => setIsMuted(!isMuted)}
-            className="bg-white text-black px-3 py-1 rounded">
-            {isMuted ? "🔇" : "🔊"}
+        <div className="flex gap-4 items-center">
+
+          {/* 🔈 Mute Toggle */}
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="bg-white text-black px-3 py-1 rounded-lg"
+          >
+            {isMuted ? "🔇 Muted" : "🔊 Sound"}
           </button>
 
+          {/* 🎚 Speech Speed */}
           <select
             value={speechRate}
             onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
-            className="text-black rounded"
+            className="text-black rounded-lg px-2 py-1"
           >
             <option value={0.8}>Slow</option>
             <option value={1}>Normal</option>
             <option value={1.3}>Fast</option>
           </select>
 
+          {/* 🔙 Back */}
           <button
-            onClick={() => {
-              stopSpeaking();
-              navigate("/");
-            }}
-            className="bg-red-500 px-4 py-1 rounded"
+            onClick={handleBack}
+            className="bg-red-500 px-4 py-1 rounded-lg"
           >
             Back
           </button>
         </div>
       </div>
 
-      {/* Progress */}
-      <div className="w-full bg-gray-700 h-2">
-        <div
-          className="bg-green-400 h-2 transition-all duration-500"
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
-
-      {/* Chat */}
+      {/* CHAT */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {messages.map((msg, i) => (
+
+        {messages.map((msg, index) => (
           <div
-            key={i}
-            className={`p-4 rounded-xl max-w-[70%] ${
-              msg.role === "user"
-                ? "bg-indigo-600 ml-auto"
-                : "bg-gray-200 text-black"
+            key={index}
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
-            {msg.content}
+            <div
+              className={`max-w-[70%] px-4 py-3 rounded-2xl shadow-md ${
+                msg.role === "user"
+                  ? "bg-indigo-600"
+                  : "bg-gray-200 text-black"
+              }`}
+            >
+              {msg.content}
+            </div>
           </div>
         ))}
 
-        {loading && (
-          <div className="animate-pulse text-gray-300">
-            🤖 AI is typing...
-          </div>
-        )}
+        {loading && <div>AI is typing...</div>}
 
         <div ref={bottomRef}></div>
       </div>
 
-      {/* Input */}
+      {/* SCORE */}
+      {score !== null && (
+        <div className="bg-white text-black p-6 text-center">
+          Final Score: {score}/10
+        </div>
+      )}
+
+      {/* INPUT */}
       {!ended && (
-        <div className="p-4 flex gap-2 bg-black/30">
+        <div className="bg-black/30 p-4 flex gap-2">
+
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your answer confidently..."
+            disabled={ended}
+            placeholder="Type your answer clearly and confidently..."
             className="flex-1 p-3 rounded-lg text-black"
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
 
-          <button onClick={startListening}
-            className="bg-blue-500 px-4 rounded">
-            🎤
-          </button>
-
-          <button onClick={sendMessage}
-            className="bg-indigo-600 px-6 rounded">
+          <button
+            onClick={sendMessage}
+            className="bg-indigo-600 px-6 rounded-lg"
+          >
             Send
           </button>
 
-          <button onClick={endInterview}
-            className="bg-red-600 px-6 rounded">
+          <button
+            onClick={endInterview}
+            className="bg-red-600 px-6 rounded-lg"
+          >
             End
           </button>
-        </div>
-      )}
-
-      {score !== null && (
-        <div className="bg-white text-black p-6 text-center">
-          Final Score: {score}/10
         </div>
       )}
     </div>
