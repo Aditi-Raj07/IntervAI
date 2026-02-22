@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+// import { signOut } from "firebase/auth";
+// import { auth } from "../firebase/firebase";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 
@@ -9,7 +11,6 @@ import { auth } from "../firebase/firebase";
 >
   Logout
 </button>
-
 export default function Home() {
   const navigate = useNavigate();
   const [level, setLevel] = useState("easy");
