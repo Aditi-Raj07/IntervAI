@@ -70,10 +70,10 @@ export default function Interview() {
   const startInterview = async () => {
     setLoading(true);
 
-    const res = await axios.post(
-      "http://localhost:5000/api/interview/chat",
-      { messages: [], mode, level }
-    );
+  const res = await axios.post(
+  "https://interv-ai-wb2v.vercel.app/api/interview/chat",
+  { messages: [], mode, level }
+);
 
     setMessages([{ role: "assistant", content: res.data.reply }]);
     speakText(res.data.reply);
