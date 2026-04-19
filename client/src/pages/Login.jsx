@@ -7,16 +7,18 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       setLoading(true);
+      setError("");
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/home");
     } catch (error) {
-      alert(error.message);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -24,24 +26,23 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 px-4">
-
       <div className="bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl rounded-3xl p-10 w-full max-w-md">
-
         <h2 className="text-3xl font-bold text-white text-center mb-2">
           Welcome Back 👋
         </h2>
-
         <p className="text-white/70 text-center mb-8">
           Login to continue your interview practice
         </p>
 
-        <div className="space-y-5">
+        {error && <p className="text-red-400 text-center mb-4">{error}</p>}
 
+        <div className="space-y-5">
           <div>
             <label className="text-white text-sm">Email</label>
             <input
               type="email"
               placeholder="you@example.com"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full px-4 py-3 rounded-xl bg-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-pink-400"
             />
@@ -52,6 +53,7 @@ export default function Login() {
             <input
               type="password"
               placeholder="••••••••"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full px-4 py-3 rounded-xl bg-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-pink-400"
             />
@@ -64,7 +66,12 @@ export default function Login() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+        </div>
 
+        <div className="text-center mt-6">
+          <Link to="/forgot-password" className="text-pink-300 hover:underline text-sm">
+            Forgot Password?
+          </Link>
         </div>
 
         <p className="text-white/70 text-sm text-center mt-6">
@@ -73,7 +80,6 @@ export default function Login() {
             Sign up
           </Link>
         </p>
-
       </div>
     </div>
   );

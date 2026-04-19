@@ -2,7 +2,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
+// ✅ API Base URL from .env (works for both local and production)
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 export default function Interview() {
+  
   const { mode, level } = useParams();
   const navigate = useNavigate();
 
@@ -70,10 +74,10 @@ export default function Interview() {
   const startInterview = async () => {
     setLoading(true);
 
-  const res = await axios.post(
-  "https://interv-ai-wb2v.vercel.app/api/interview/chat",
-  { messages: [], mode, level }
-);
+    const res = await axios.post(
+      `${API_BASE}/api/interview/chat`,
+      { messages: [], mode, level }
+    );
 
     setMessages([{ role: "assistant", content: res.data.reply }]);
     speakText(res.data.reply);
@@ -98,7 +102,7 @@ export default function Interview() {
     setLoading(true);
 
     const res = await axios.post(
-      "http://localhost:5000/api/interview/chat",
+      `${API_BASE}/api/interview/chat`,
       { messages: updatedMessages, mode, level }
     );
 
@@ -124,7 +128,7 @@ export default function Interview() {
     setLoading(true);
 
     const res = await axios.post(
-      "http://localhost:5000/api/interview/chat",
+      `${API_BASE}/api/interview/chat`,
       {
         messages: [
           ...messages,
@@ -156,7 +160,7 @@ export default function Interview() {
   // ==========================
   const handleBack = () => {
     stopSpeaking();
-    navigate("/");
+    navigate("/home");   // ✅ Better to go to /home instead of "/"
   };
 
   return (

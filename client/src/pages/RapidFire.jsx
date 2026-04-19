@@ -3,6 +3,9 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { FaBolt, FaMicrophone, FaStop, FaTrophy, FaBrain, FaRedo, FaCheckCircle } from "react-icons/fa";
 
+// ✅ API Base URL from .env (works for both local and production)
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 export default function RapidFire() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -91,7 +94,7 @@ export default function RapidFire() {
     try {
       // We send the index to the backend to ensure unique questions
       const res = await axios.post(
-        "http://localhost:5000/api/interview/chat",
+        `${API_BASE}/api/interview/chat`,
         {
           messages: [{ 
             role: "assistant", 
@@ -281,7 +284,7 @@ export default function RapidFire() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={isListening ? "Listening..." : "Type your answer or use the mic..."}
-                disabled={loading || isListening} // Disable typing while listening to avoid conflict
+                disabled={loading || isListening}
               />
 
               {/* Mic Button */}
