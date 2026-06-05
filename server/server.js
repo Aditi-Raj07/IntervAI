@@ -12,8 +12,15 @@ app.use(express.json());
 
 app.use("/api/interview", interviewRoutes);
 
-app.listen(5000, () => {
-    console.log("ENV KEY:", process.env.GROQ_API_KEY);
-
-  console.log("Server running on port 5000");
+app.get("/", (req, res) => {
+  res.json({ message: "Backend Running 🚀" });
 });
+
+// Local development only
+if (process.env.NODE_ENV !== "production") {
+  app.listen(5000, () => {
+    console.log("Server running on port 5000");
+  });
+}
+
+export default app;
