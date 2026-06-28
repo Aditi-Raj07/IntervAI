@@ -1,212 +1,76 @@
-# 🚀 InterviewAI – AI-Powered Mock Interview Platform
+<div align="center">
 
-**InterviewAI** is a modern AI-powered mock interview platform that helps students and job seekers prepare for technical, HR, core subject, and rapid-fire interviews. It provides an interactive interview experience with a clean UI, secure authentication, and real-time AI-generated questions.
+# 🚀 InterviewAI
 
-🌐 **Live Demo:** https://interv-ai-mm5n.vercel.app/
+### AI-Powered Mock Interview Platform
 
----
+Practice **Technical**, **HR**, **Core Subjects**, and **Rapid Fire** interviews with an intuitive AI-driven platform designed to boost confidence and interview performance.
 
-## 📖 Overview
+<p>
+  <a href="https://interv-ai-mm5n.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-8A2BE2?style=for-the-badge">
+  </a>
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react">
+  <img src="https://img.shields.io/badge/Firebase-Authentication-FFCA28?style=for-the-badge&logo=firebase">
+  <img src="https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel">
+</p>
 
-InterviewAI is designed to simulate real interview experiences, allowing users to practice anytime and improve their confidence before actual placement or job interviews.
-
-The platform supports multiple interview modes, user authentication using Firebase, and a responsive interface built with React and Tailwind CSS.
+</div>
 
 ---
 
 ## ✨ Features
 
-* 🔐 Secure Authentication using Firebase
-* 👤 User Registration and Login
-* 🔑 Forgot Password functionality
-* 🤖 AI-Powered Mock Interviews
+* 🤖 AI-powered mock interview experience
 * 💻 Technical Interview Practice
-* 📚 Core Subject Interviews
-
-  * DBMS
-  * Operating Systems
-  * Computer Networks
-  * Object-Oriented Programming
-* 🗣️ HR Interview Preparation
-* ⚡ Rapid Fire Question Round
+* 📚 Core Subjects (DBMS, OS, CN & OOP)
+* 👥 HR Interview Preparation
+* ⚡ Rapid Fire Interview Mode
+* 🔐 Secure Firebase Authentication
+* 🛡️ Protected Routes
+* 🎨 Beautiful UI with Framer Motion Animations
 * 📱 Fully Responsive Design
-* 🎨 Modern UI with Smooth Animations
-* 🔒 Protected Routes using React Router
-* 🚀 Fast Deployment on Vercel
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend
-
-* React.js
-* Vite
-* Tailwind CSS
-* React Router DOM
-* Framer Motion
-* React Icons
-
-### Backend / Services
-
-* Firebase Authentication
-* Firebase Hosting (Authentication Service)
-
-### Deployment
-
-* Vercel
+| Category       | Technologies                 |
+| -------------- | ---------------------------- |
+| Frontend       | React.js, Vite, Tailwind CSS |
+| Authentication | Firebase Authentication      |
+| Routing        | React Router DOM             |
+| Animation      | Framer Motion                |
+| Icons          | React Icons                  |
+| Deployment     | Vercel                       |
 
 ---
 
-## 📂 Project Structure
-
-```
-src
-│
-├── components
-├── firebase
-│   └── firebase.js
-├── pages
-│   ├── Landing.jsx
-│   ├── Login.jsx
-│   ├── Signup.jsx
-│   ├── ForgotPassword.jsx
-│   ├── Home.jsx
-│   ├── Interview.jsx
-│   └── RapidFire.jsx
-│
-├── App.jsx
-└── main.jsx
-```
-
----
-
-## 🔑 Authentication
-
-The application uses Firebase Authentication to provide:
-
-* Email & Password Sign Up
-* Login
-* Password Reset
-* Persistent User Sessions
-* Route Protection
-
-Unauthenticated users are automatically redirected to the login page before accessing protected routes.
-
----
-
-## 🎯 Interview Categories
-
-### 💻 Technical Interviews
-
-Practice coding, DSA, algorithms, and software engineering concepts.
-
-### 📚 Core Subjects
-
-Strengthen your understanding of:
-
-* DBMS
-* Operating Systems
-* Computer Networks
-* OOP
-
-### 👥 HR Interviews
-
-Prepare answers for behavioral and communication-based interview questions.
-
-### ⚡ Rapid Fire
-
-Answer quick AI-generated questions under time pressure to improve confidence and speed.
-
----
-
-## 🚀 Installation
-
-Clone the repository
+## 🚀 Getting Started
 
 ```bash
 git clone <repository-url>
-```
 
-Navigate to the project
-
-```bash
 cd InterviewAI
-```
 
-Install dependencies
-
-```bash
 npm install
-```
 
-Create a `.env` file and add your Firebase configuration.
-
-Run the development server
-
-```bash
 npm run dev
 ```
 
-Open your browser
-
-```
-http://localhost:5173
-```
-
 ---
 
-## 🌍 Deployment
+## 🌐 Live Demo
 
-The application is deployed on **Vercel**.
+🔗 **https://interv-ai-mm5n.vercel.app/**
 
-Live URL:
 
-https://interv-ai-mm5n.vercel.app/
 
----
 
-## 🔮 Future Improvements
+<div align="center">
 
-* AI Voice Interviews
-* Resume Analysis
-* Interview Performance Dashboard
-* AI Feedback and Suggestions
-* Coding Playground
-* Company-Specific Interview Sets
-* Progress Tracking
-* Leaderboard
-* Interview History
-* Multi-language Support
+### ⭐ If you like this project, don't forget to Star the repository!
 
----
+Made with ❤️ using React, Firebase & AI
 
-## 🤝 Contributing
-
-Contributions are welcome.
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Commit your changes.
-4. Push to your branch.
-5. Open a Pull Request.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-## 👨‍💻 Developer
-
-**Abhay Kumar Yadav**
-
-B.Tech Information Technology Student
-
-Passionate about Full Stack Development, Artificial Intelligence, and Software Engineering.
-
----
-
-⭐ If you found this project useful, don't forget to **Star** the repository!
+</div>
