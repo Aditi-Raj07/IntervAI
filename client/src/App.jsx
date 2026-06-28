@@ -4,12 +4,13 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/firebase";
 
 // Pages
-import Home from "./pages/Home.jsx";
-import Interview from "./pages/Interview.jsx";
-import RapidFire from "./pages/RapidFire.jsx";
-import Login from "./pages/Login.jsx";
-import Signup from "./pages/Signup.jsx";
-import ForgotPassword from "./pages/ForgotPassword.jsx";   // Make sure this line is exact
+import Landing from "./pages/Landing";
+import Home from "./pages/Home";
+import Interview from "./pages/Interview";
+import RapidFire from "./pages/RapidFire";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -24,21 +25,56 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-black text-white">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={user ? <Navigate to="/home" /> : <Login />} />
-        <Route path="/signup" element={user ? <Navigate to="/home" /> : <Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        
-        <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />} />
-        <Route path="/interview/:mode/:level" element={user ? <Interview /> : <Navigate to="/login" />} />
-        <Route path="/rapid" element={user ? <RapidFire /> : <Navigate to="/login" />} />
 
-        <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* Landing Page */}
+        <Route path="/" element={<Landing />} />
+
+        {/* Authentication */}
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/home" replace /> : <Login />}
+        />
+
+        <Route
+          path="/signup"
+          element={user ? <Navigate to="/home" replace /> : <Signup />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+        {/* Protected Routes */}
+        <Route
+          path="/home"
+          element={user ? <Home /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/interview/:mode/:level"
+          element={user ? <Interview /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/rapid"
+          element={user ? <RapidFire /> : <Navigate to="/login" replace />}
+        />
+
+        {/* Unknown Routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </BrowserRouter>
   );
